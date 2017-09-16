@@ -4,30 +4,19 @@ using UnityEngine;
 public class TerrainManager : MonoBehaviour {
 
 	public 	Sprite[] 	TileableSprites;
-	public 	int 		NumHorizontalTiles = 25;
-	public 	int 		NumVerticalTiles = 25;
+	public 	int 		Cols = 19;
+	public 	int 		Rows = 15;
+	public 	float 		HorizontalRedrawDistance = 2;
+	public 	float 		VerticalRedrawDistance = 4;
 	public 	int 		Key = 1;
 	public 	Transform 	Player;
-	public 	float 		HorizontalRedrawDistance = 5;
-	public 	float 		VerticalRedrawDistance = 5;
 
 	private SpriteRenderer[,] _renderers;
 
+
 	// Use this for initialization
 	void Start () {
-		var offset = new Vector3 (0 - NumHorizontalTiles / 2, 0 - NumVerticalTiles / 2, 0);
-		_renderers = new SpriteRenderer[NumHorizontalTiles, NumVerticalTiles];
-
-		for (int x = 0; x < NumHorizontalTiles; x++) {
-			for (int y = 0; y < NumVerticalTiles; y++) {
-				var tile = new GameObject ();
-				tile.transform.position = new Vector3 (x, y, 0) + offset;
-				_renderers[x,y] = tile.AddComponent<SpriteRenderer>();
-				tile.name = "Terrain " + tile.transform.position;
-				tile.transform.parent = transform;
-			}
-		}
-
+		initMap ();
 		RedrawMap();
 	}
 
@@ -38,6 +27,24 @@ public class TerrainManager : MonoBehaviour {
 		if (DistanceFromMapCentre.x > HorizontalRedrawDistance ||
 			DistanceFromMapCentre.y > VerticalRedrawDistance) {
 			RedrawMap();
+		}
+	}
+
+
+	void initMap () {
+	// Initiate our map by creating a pool of tiles
+
+		var offset = new Vector3 (0 - Cols / 2, 0 - Rows / 2, 0);
+		_renderers = new SpriteRenderer[Cols, Rows];
+
+		for (int x = 0; x < Cols; x++) {
+			for (int y = 0; y < Rows; y++) {
+				var tile = new GameObject ();
+				tile.transform.position = new Vector3 (x, y, 0) + offset;
+				_renderers[x,y] = tile.AddComponent<SpriteRenderer>();
+				tile.name = "Terrain " + tile.transform.position;
+				tile.transform.parent = transform;
+			}
 		}
 	}
 
@@ -85,12 +92,12 @@ public class TerrainManager : MonoBehaviour {
 			(int)Player.position.y,
 			transform.position.z );
 
-		for (int x = 0; x < NumHorizontalTiles; x++) {
-			for (int y = 0; y < NumVerticalTiles; y++) {
+		for (int x = 0; x < Cols; x++) {
+			for (int y = 0; y < Rows; y++) {
 				var spriteRenderer = _renderers[x,y];
 
 				// We add the current x and y position to our position in the array.
-				// This allows us to grab the number of tiles we want (NumHorizontalTiles) 
+				// This allows us to grab the number of tiles we want (Cols) 
 				// at our current position (int)transform.position.x
 				spriteRenderer.sprite = GetSpriteFromMap(
 					(int)transform.position.x + x,

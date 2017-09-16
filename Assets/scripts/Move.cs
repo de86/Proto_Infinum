@@ -7,10 +7,6 @@ public class Move : MonoBehaviour {
 	public	float	fastSpeed = 3;
 	public	KeyCode EnableFastSpeedWithKey = KeyCode.LeftShift;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	// Update is called once per frame
 	void Update () {

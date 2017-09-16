@@ -17,5 +17,4 @@ public class RandomHelper {
 		hash *= 0x63288691;
 		return (int)(hash % range);
 	}
-
 }
