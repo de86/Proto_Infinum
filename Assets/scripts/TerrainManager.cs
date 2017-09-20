@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TerrainManager : MonoBehaviour {
@@ -10,8 +11,11 @@ public class TerrainManager : MonoBehaviour {
 	public 	float 		VerticalRedrawDistance = 4;
 	public 	int 		Key = 1;
 	public 	Transform 	Player;
+	public 	GameObject	TilePrefab;
 
-	private SpriteRenderer[,] _renderers;
+	private Vector3 			offset;
+	private TileManager[,]	 	_tiles;
+	private IEnumerable<Marker>	_markers;
 
 
 	// Use this for initialization
@@ -32,31 +36,23 @@ public class TerrainManager : MonoBehaviour {
 
 
 	void initMap () {
-	// Initiate our map by creating a pool of tiles
+	// Init our map by creating a pool of tiles
 
-		var offset = new Vector3 (0 - Cols / 2, 0 - Rows / 2, 0);
-		_renderers = new SpriteRenderer[Cols, Rows];
+		offset = new Vector3 (0 - Cols / 2, 0 - Rows / 2, 0);
+		_tiles = new TileManager[Cols, Rows];
+		GameObject tilePrefab;
 
 		for (int x = 0; x < Cols; x++) {
 			for (int y = 0; y < Rows; y++) {
-				var tile = new GameObject ();
-				tile.transform.position = new Vector3 (x, y, 0) + offset;
-				_renderers[x,y] = tile.AddComponent<SpriteRenderer>();
-				tile.name = "Terrain " + tile.transform.position;
-				tile.transform.parent = transform;
+				tilePrefab = GameObject.Instantiate(TilePrefab, transform.position, Quaternion.identity) as GameObject;
+				tilePrefab.transform.parent = transform;
+
+				TileManager tile = tilePrefab.GetComponent<TileManager>();
+				tile.init(x + (int)offset.x, y + (int)offset.y);
+				_tiles[x,y] = tile;
 			}
 		}
 	}
-
-
-	public Sprite GetSpriteFromMap(int x, int y) {
-	// Returns a random Sprite. We use our X and Y coords against a Perlin Noise map
-	// generated with the Key as a seed so the same random sprite is always returned
-	// when the key is same
-
-		return TileableSprites [RandomHelper.Range (x, y, Key, TileableSprites.Length)];
-	}
-
 
 	private Vector2 GetDistance (Vector3 pointA, Vector3 pointB) {
 	// Returns distance as a Vector2 given to Vector3s (Vector3s used for
@@ -72,8 +68,6 @@ public class TerrainManager : MonoBehaviour {
 		distance.x = distance.x > 0 ? distance.x : -distance.x;
 		distance.y = distance.y > 0 ? distance.y : -distance.y;
 
-		Debug.Log(distance);
-
 		return distance;
 	}
 
@@ -82,26 +76,23 @@ public class TerrainManager : MonoBehaviour {
 	// Redraws our map to the screen. Used when our player gets close to the
 	// edge of the currently drawn map
 
-		Debug.Log("Redrawing...");
-
 		// Move the transform of this TerrainManager to the same position as
 		// the player. This allows us to redraw the map at a different location
 		// of the noise map
-		transform.position = new Vector3(
+		transform.position = new Vector3 (
 			(int)Player.position.x,
 			(int)Player.position.y,
 			transform.position.z );
 
 		for (int x = 0; x < Cols; x++) {
 			for (int y = 0; y < Rows; y++) {
-				var spriteRenderer = _renderers[x,y];
-
-				// We add the current x and y position to our position in the array.
-				// This allows us to grab the number of tiles we want (Cols) 
-				// at our current position (int)transform.position.x
-				spriteRenderer.sprite = GetSpriteFromMap(
-					(int)transform.position.x + x,
-					(int)transform.position.y + y );
+				TileManager tile = _tiles[x,y];
+				int newX = (int)gameObject.transform.position.x + x + (int)offset.x;
+				int newY = (int)gameObject.transform.position.y + y + (int)offset.y;
+				if (x == 0 && y == 0){
+					Debug.Log(transform.position);
+				}
+				tile.SetWorldPos(newX, newY);
 			}
 		}
 

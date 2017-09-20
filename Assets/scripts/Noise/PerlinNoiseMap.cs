@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class RandomHelper {
+public class PerlinNoiseMap {
 
-	public static int Range(int x, int y, int key, int range){
+	public static int GetValueInRange(int x, int y, int key, int range){
+	// Returns a value  from 0 to the given range using a Perlin
+	// NNoise funtion based upon the given seed.
 		uint hash = (uint)key;
 		hash ^= (uint)x;
 		hash *= 0x51d7348d;
