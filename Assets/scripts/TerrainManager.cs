@@ -5,14 +5,14 @@ using UnityEngine;
 public class TerrainManager : MonoBehaviour {
 
 	public 	Sprite[] 	TileableSprites;
-	public 	int 		Cols = 19;
-	public 	int 		Rows = 15;
 	public 	float 		HorizontalRedrawDistance = 2;
 	public 	float 		VerticalRedrawDistance = 4;
 	public 	int 		Key = 1;
 	public 	Transform 	Player;
 	public 	GameObject	TilePrefab;
 
+	private	int 				Cols = 25;
+	private	int 				Rows = 18;
 	private Vector3 			offset;
 	private TileManager[,]	 	_tiles;
 	private IEnumerable<Marker>	_markers;
